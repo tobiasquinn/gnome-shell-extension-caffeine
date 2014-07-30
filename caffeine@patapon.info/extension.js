@@ -33,6 +33,7 @@ const Shell = imports.gi.Shell;
 const MessageTray = imports.ui.messageTray;
 const Atk = imports.gi.Atk;
 const Config = imports.misc.config;
+const Util = imports.misc.util;
 
 const INHIBIT_APPS_KEY = 'inhibit-apps';
 const SHOW_INDICATOR_KEY = 'show-indicator';
@@ -204,6 +205,8 @@ const Caffeine = new Lang.Class({
     },
 
     addInhibit: function(app_id) {
+        // run unclutter
+        Util.spawn(['/usr/bin/unclutter', '-idle', '1']);
         this._sessionManager.InhibitRemote(app_id,
             0, "Inhibit by %s".format(IndicatorName), 12,
             Lang.bind(this, function(cookie) {
@@ -238,6 +241,8 @@ const Caffeine = new Lang.Class({
     },
 
     removeInhibit: function(app_id) {
+        // force kill all unclutter
+        Util.spawn(['/usr/bin/killall', '/usr/bin/unclutter']);
         let index = this._apps.indexOf(app_id);
         this._sessionManager.UninhibitRemote(this._cookies[index]);
     },
